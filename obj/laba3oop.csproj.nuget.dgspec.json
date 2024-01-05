@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Нова папка\\laba_4_zdor\\laba3oop.csproj": {}
+    "C:\\zdor\\work\\laba3oop.csproj": {}
   },
   "projects": {
-    "C:\\Нова папка\\laba_4_zdor\\laba3oop.csproj": {
+    "C:\\zdor\\work\\laba3oop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Нова папка\\laba_4_zdor\\laba3oop.csproj",
+        "projectUniqueName": "C:\\zdor\\work\\laba3oop.csproj",
         "projectName": "laba3oop",
-        "projectPath": "C:\\Нова папка\\laba_4_zdor\\laba3oop.csproj",
+        "projectPath": "C:\\zdor\\work\\laba3oop.csproj",
         "packagesPath": "C:\\Users\\nikol\\.nuget\\packages\\",
-        "outputPath": "C:\\Нова папка\\laba_4_zdor\\obj\\",
+        "outputPath": "C:\\zdor\\work\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\nikol\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\nikol\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

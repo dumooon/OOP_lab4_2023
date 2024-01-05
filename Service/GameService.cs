@@ -14,9 +14,9 @@ namespace laba4oop.Service
             _gameRepository = gameRepository;
         }
 
-        public void CreateGame(int gameRating)
+        public void CreateGame(PlayerEntity player, bool isWin, int gameRating)
         {
-            var game = new GameEntity { GameRating = gameRating };
+            var game = new GameEntity(player, isWin) { GameRating = gameRating };
             _gameRepository.Create(game);
         }
 

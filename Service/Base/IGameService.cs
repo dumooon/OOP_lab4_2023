@@ -5,7 +5,7 @@ namespace laba4oop.Service.Base
 {
     public interface IGameService
     {
-        void CreateGame(int gameRating);
+        void CreateGame(PlayerEntity player, bool isWin, int gameRating);
         List<GameEntity> GetAllGames();
         GameEntity GetGameById(int gameId);
         void UpdateGame(GameEntity game);

@@ -1,23 +1,26 @@
 using System;
 using laba4oop.Entities;
-using laba4oop.Simulation;
-using laba4oop.Simulation.GameType;
 using laba4oop.Service.Base;
 using laba4oop.Commands.Base;
+using laba4oop.Simulation;
 
 namespace laba4oop.Commands
 {
     public class StartGameCommand : ICommand
     {
-        private IPlayerService _playerService;
-        private IGameService _gameService;
-        private GameFactory _gameFactory;
+        private readonly IPlayerService _playerService;
+        private readonly IGameService _gameService;
+        private readonly GameFactory _gameFactory;
 
         public StartGameCommand(IPlayerService playerService, IGameService gameService, GameFactory gameFactory)
         {
             _playerService = playerService;
             _gameService = gameService;
             _gameFactory = gameFactory;
+        }
+        public string GetCommandInfo()
+        {
+            return "Start a new Tic-Tac-Toe game";
         }
 
         public void Execute()
@@ -30,107 +33,43 @@ namespace laba4oop.Commands
             var player2Id = int.Parse(Console.ReadLine() ?? string.Empty);
             var player2 = _playerService.GetPlayerById(player2Id);
 
-            Console.WriteLine("Choose account type:");
-            Console.WriteLine("1. Basic");
-            Console.WriteLine("2. Reduced penalty account");
-            Console.WriteLine("3. Account with win bonuses");
-            var accountTypeChoice = GetChoice(1, 3);
+            Console.WriteLine("Starting Tic-Tac-Toe game...");
 
-            Console.WriteLine("Choose game type:");
-            Console.WriteLine("1. Basic game");
-            Console.WriteLine("2. Training game");
-            Console.WriteLine("3. Solo game");
-            var gameTypeChoice = GetChoice(1, 3);
+            var ticTacToeGame = new TicTacToeGame(player1, player2);
+            var currentPlayer = player1;
+            var isGameOver = false;
+            string winner = null;
 
-            var player1Account = CreatePlayer(_gameFactory, accountTypeChoice, player1.UserName, player1.CurrentRating);
-            var player2Account = CreatePlayer(_gameFactory, accountTypeChoice, player2.UserName, player2.CurrentRating);
-
-            Console.WriteLine("\nGame simulation...");
-
-            for (var i = 0; i < 1; i++)
+            // Main game loop
+            while (!isGameOver)
             {
-                var gameRating = new Random().Next(1, 255);
-                var game = CreateGame(gameTypeChoice, gameRating);
+                Console.Clear();
+                ticTacToeGame.PrintBoard();
 
-                player1Account.WinGame(player2Account, game.GetGameRating());
-                player2Account.LoseGame(player1Account, game.GetGameRating());
+                Console.WriteLine($"Player {currentPlayer.UserName}'s turn (Enter row and column number): ");
+                int row = Convert.ToInt32(Console.ReadLine());
+                
+                int col = Convert.ToInt32(Console.ReadLine());
 
-                player1.CurrentRating = player1Account.CurrentRating;
-                player1.GamesCount = player1Account.GamesCount;
-                _playerService.UpdatePlayer(player1);
-
-                player2.CurrentRating = player2Account.CurrentRating;
-                player2.GamesCount = player2Account.GamesCount;
-                _playerService.UpdatePlayer(player2);
-
-                var gameEntity = new GameEntity
+                if (!ticTacToeGame.IsMoveValid(row, col))
                 {
-                    GameRating = gameRating, PlayerId = player1Id, GameType = game.GetGameType(),
-                    AccountType = player1Account.GetAccountType()
-                };
-                _gameService.CreateGame(gameEntity.GameRating);
-            }
-
-            Console.WriteLine("\nPlayer stats");
-            Console.WriteLine();
-            player1Account.GetStats();
-            Console.WriteLine();
-            player2Account.GetStats();
-
-            Console.WriteLine("Game created");
-        }
-
-        private int GetChoice(int minValue, int maxValue)
-        {
-            int choice;
-            while (true)
-            {
-                Console.Write($"Enter the number from {minValue} to {maxValue}: ");
-                if (int.TryParse(Console.ReadLine(), out choice) && choice >= minValue && choice <= maxValue)
-                {
-                    break;
+                    Console.WriteLine("Invalid move. Try again.");
+                    continue;
                 }
 
-                Console.WriteLine("Wrong input");
+                ticTacToeGame.MakeMove(row, col);
+                isGameOver = ticTacToeGame.CheckForWin() || ticTacToeGame.CheckForDraw();
+
+                if (isGameOver)
+                {
+                    winner = currentPlayer.UserName;
+                    Console.Clear();
+                    ticTacToeGame.PrintBoard();
+                    Console.WriteLine(winner == null ? "It's a draw!" : $"Player {winner} wins!");
+                }
+
+                currentPlayer = currentPlayer == player1 ? player2 : player1;
             }
-
-            return choice;
-        }
-
-        public GameAccount CreatePlayer(GameFactory factory, int accountTypeChoice, string userName,
-            int initialRating)
-        {
-            switch (accountTypeChoice)
-            {
-                case 1:
-                    return GameFactory.CreateStandardGameAccount(userName, initialRating);
-                case 2:
-                    return GameFactory.CreateReducedLossGameAccount(userName, initialRating);
-                case 3:
-                    return GameFactory.CreateWinningStreakGameAccount(userName, initialRating);
-                default:
-                    throw new ArgumentException("Wrong type of account");
-            }
-        }
-
-        private Game CreateGame(int gameTypeChoice, int rating)
-        {
-            switch (gameTypeChoice)
-            {
-                case 1:
-                    return new StandardGame(rating);
-                case 2:
-                    return new TrainingGame();
-                case 3:
-                    return new SoloGame(rating);
-                default:
-                    throw new ArgumentException("Wrong type of game");
-            }
-        }
-
-        public string GetCommandInfo()
-        {
-            return "Start the game";
         }
     }
 }

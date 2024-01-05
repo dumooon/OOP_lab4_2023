@@ -3,6 +3,8 @@ using laba4oop.Repository;
 using laba4oop.Commands;
 using laba4oop.Service.Base;
 using laba4oop.Service;
+using laba4oop.Entities;
+
 
 namespace laba4oop.Simulation
 {
@@ -40,7 +42,13 @@ namespace laba4oop.Simulation
             {
                 Console.WriteLine("Start:");
                 _commandManager.DisplayCommands();
+                var player1 = dataBase.Players[0];
+                var player2 = dataBase.Players[1];
 
+                TicTacToeGame game = new TicTacToeGame(player1, player2);
+
+                game.EndGame();
+                UpdateRatingsAndGames(game);
                 var startChoice = GetChoice(1, _commandManager.Commands.Count);
                 _commandManager.ExecuteCommand(startChoice - 1);
             }
@@ -62,5 +70,36 @@ namespace laba4oop.Simulation
 
             return choice;
         }
+
+        private static void UpdateRatingsAndGames(TicTacToeGame game)
+        {
+            if (game.Winner != null)
+            {
+                var winner = game.Winner;
+                var loser = (winner == game.Player1) ? game.Player2 : game.Player1;
+
+                // Оновлюємо рейтинги
+                winner.CurrentRating += 10;
+                loser.CurrentRating -= 10;
+
+                // Переконуємося, що рейтинг не від'ємний
+                loser.CurrentRating = Math.Max(0, loser.CurrentRating);
+
+                // Оновлюємо дані в колекції
+                UpdatePlayerData(winner);
+                UpdatePlayerData(loser);
+            }
+        }
+        private static void UpdatePlayerData(PlayerEntity player)
+        {
+            // Знайдіть об'єкт у колекції і оновіть його
+            var playerToUpdate = dataBase.Players.FirstOrDefault(p => p.Id == player.Id);
+            if (playerToUpdate != null)
+            {
+                playerToUpdate.CurrentRating = player.CurrentRating;
+                // ... оновіть інші властивості за потреби
+            }
+        }
+
     }
 }

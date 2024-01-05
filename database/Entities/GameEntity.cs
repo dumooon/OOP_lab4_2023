@@ -8,5 +8,12 @@ namespace laba4oop.Entities
         public string GameType { get; set; }
         public string AccountType { get; set; }
         public bool IsWin { get; set; }
+
+        public GameEntity(PlayerEntity player, bool isWin)
+        {
+            PlayerId = player.Id;
+            IsWin = isWin;
+        }
     }
+   
 }
